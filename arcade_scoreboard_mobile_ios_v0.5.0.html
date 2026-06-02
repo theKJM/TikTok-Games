@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Scoreboard">
+<meta name="theme-color" content="#050615">
+<title>Scoreboard V0.5.0 Mobile iOS</title>
+<link rel="apple-touch-icon" href="scoreboard_app_icon_v0.5.0.png">
+<link rel="icon" type="image/png" href="scoreboard_app_icon_v0.5.0.png">
+<style>
+:root {
+  --bg1:#050615;
+  --bg2:#151738;
+  --accent:#00f0ff;
+  --accent2:#ff2bd6;
+  --text:#ffffff;
+  --box:rgba(7, 12, 31, .78);
+  --line:rgba(255,255,255,.20);
+  --glow:0 0 18px var(--accent), 0 0 38px rgba(0,240,255,.55), 0 0 70px rgba(255,43,214,.30);
+  --safeTop: env(safe-area-inset-top);
+  --safeBottom: env(safe-area-inset-bottom);
+}
+
+* {
+  box-sizing:border-box;
+  -webkit-tap-highlight-color: transparent;
+  user-select:none;
+}
+
+html, body {
+  margin:0;
+  min-height:100%;
+  background:#050615;
+  color:white;
+  font-family:Verdana, Arial, sans-serif;
+  overflow:hidden;
+}
+
+body {
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(circle at 50% 8%, rgba(0,240,255,.20), transparent 34%),
+    radial-gradient(circle at 50% 92%, rgba(255,43,214,.20), transparent 40%),
+    linear-gradient(180deg, var(--bg1), var(--bg2));
+}
+
+body::before {
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px);
+  background-size:100% 7px;
+  opacity:.25;
+  pointer-events:none;
+}
+
+@font-face {
+  font-family: SevenSegLocal;
+  src: local("7SEG"), local("DSEG7 Classic"), local("Digital-7");
+}
+
+.app {
+  position:absolute;
+  inset:0;
+  padding:calc(12px + var(--safeTop)) 12px calc(12px + var(--safeBottom));
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.topbar {
+  display:grid;
+  grid-template-columns:86px 1fr 86px;
+  gap:8px;
+  align-items:center;
+}
+
+button, select, input {
+  font:inherit;
+}
+
+.settingsBtn, .smallBtn {
+  min-height:48px;
+  border:1px solid rgba(255,255,255,.26);
+  border-radius:16px;
+  background:linear-gradient(180deg, rgba(255,255,255,.17), rgba(255,255,255,.055));
+  color:white;
+  box-shadow:0 0 16px rgba(0,240,255,.22), inset 0 0 16px rgba(255,255,255,.05);
+  font-weight:800;
+  letter-spacing:.5px;
+}
+
+.settingsBtn {
+  font-size:15px;
+}
+
+.titleInput, .nameInput {
+  width:100%;
+  border:1px solid rgba(255,255,255,.22);
+  border-radius:18px;
+  background:var(--box);
+  color:var(--text);
+  min-height:54px;
+  text-align:center;
+  padding:8px 10px;
+  box-shadow:var(--glow);
+  font-size:20px;
+  font-weight:800;
+}
+
+.nameInput {
+  min-height:46px;
+  font-size:16px;
+  box-shadow:0 0 14px rgba(0,240,255,.34);
+}
+
+.scorePanel {
+  flex:1;
+  min-height:0;
+  border:1px solid rgba(255,255,255,.22);
+  border-radius:28px;
+  background:linear-gradient(180deg, rgba(5,8,22,.76), rgba(5,8,22,.48));
+  box-shadow:0 0 28px rgba(0,240,255,.20), inset 0 0 28px rgba(255,255,255,.035);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:12px;
+  gap:10px;
+}
+
+.timer {
+  width:min(78vw, 420px);
+  min-height:54px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:16px;
+  background:rgba(0,0,0,.30);
+  font-family:SevenSegLocal, "Courier New", monospace;
+  font-size:42px;
+  line-height:1;
+  color:#fff;
+  text-shadow:var(--glow);
+  letter-spacing:1px;
+  padding:8px 4px 5px;
+}
+
+.score {
+  width:100%;
+  text-align:center;
+  font-family:SevenSegLocal, "Courier New", monospace;
+  font-size:clamp(92px, 32vw, 178px);
+  line-height:.92;
+  color:white;
+  text-shadow:var(--glow);
+  letter-spacing:-4px;
+  padding-top:8px;
+  font-variant-numeric:tabular-nums;
+}
+
+.labelRows {
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px;
+  margin-top:4px;
+}
+
+.statBox {
+  width:min(86vw, 430px);
+  display:grid;
+  grid-template-columns:76px 1fr;
+  align-items:center;
+  gap:8px;
+}
+
+.statLabel {
+  height:42px;
+  border-radius:13px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.16);
+  font-size:15px;
+  font-weight:900;
+  color:white;
+}
+
+.statValue {
+  min-height:48px;
+  border-radius:14px;
+  background:rgba(0,0,0,.35);
+  border:1px solid rgba(255,255,255,.18);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:SevenSegLocal, "Courier New", monospace;
+  font-size:42px;
+  color:white;
+  text-shadow:var(--glow);
+  padding-top:4px;
+}
+
+.avg .statValue {
+  font-size:52px;
+  min-height:58px;
+}
+
+.controls {
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:8px;
+}
+
+.controlBtn {
+  min-height:64px;
+  border-radius:20px;
+  border:1px solid rgba(255,255,255,.24);
+  color:white;
+  font-weight:950;
+  font-size:18px;
+  background:linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.055));
+  box-shadow:0 0 16px rgba(0,240,255,.20), inset 0 0 14px rgba(255,255,255,.04);
+}
+
+.controlBtn:active {
+  transform:scale(.975);
+  filter:brightness(1.2);
+}
+
+.plus {
+  font-size:32px;
+}
+
+.drawer {
+  position:absolute;
+  top:0;
+  left:0;
+  bottom:0;
+  width:min(88vw, 390px);
+  background:rgba(5,7,20,.96);
+  border-right:1px solid rgba(255,255,255,.22);
+  box-shadow:22px 0 42px rgba(0,0,0,.45), 0 0 26px rgba(0,240,255,.24);
+  transform:translateX(-105%);
+  transition:transform .25s ease;
+  z-index:5;
+  padding:calc(18px + var(--safeTop)) 14px calc(18px + var(--safeBottom));
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
+
+.drawer.open {
+  transform:translateX(0);
+}
+
+.drawer h2 {
+  margin:0 0 12px;
+  font-size:24px;
+}
+
+.setting {
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.055);
+  border-radius:16px;
+  padding:12px;
+  margin:10px 0;
+}
+
+.setting label {
+  display:block;
+  font-size:13px;
+  opacity:.88;
+  margin-bottom:7px;
+  font-weight:800;
+}
+
+.setting select, .setting input[type="range"], .setting input[type="number"] {
+  width:100%;
+}
+
+.setting select, .setting input[type="number"] {
+  min-height:42px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.20);
+  background:#11152e;
+  color:white;
+  padding:0 10px;
+}
+
+.row {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+.closeBtn {
+  width:100%;
+  min-height:50px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.25);
+  background:linear-gradient(180deg, rgba(255,43,214,.32), rgba(0,240,255,.16));
+  color:white;
+  font-size:18px;
+  font-weight:900;
+}
+
+.backdrop {
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,.48);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .2s ease;
+  z-index:4;
+}
+
+.backdrop.show {
+  opacity:1;
+  pointer-events:auto;
+}
+
+.rainbowText {
+  background:linear-gradient(90deg, #ff2bd6, #ff8c00, #ffff4d, #00f0ff, #4d6bff, #ff2bd6);
+  background-size:280% 100%;
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent !important;
+  animation:rainbow 3s linear infinite;
+  text-shadow:none !important;
+}
+
+.rainbowBox {
+  border-color:rgba(255,255,255,.32) !important;
+  background:linear-gradient(120deg, rgba(255,43,214,.35), rgba(255,140,0,.24), rgba(0,240,255,.28)) !important;
+}
+
+@keyframes rainbow {
+  from { background-position:0% 50%; }
+  to { background-position:280% 50%; }
+}
+
+body.color-cyan { --accent:#00f0ff; --accent2:#ff2bd6; }
+body.color-pink { --accent:#ff2bd6; --accent2:#00f0ff; }
+body.color-orange { --accent:#ff8c00; --accent2:#ff2bd6; }
+body.color-blue { --accent:#3478ff; --accent2:#00f0ff; }
+body.color-green { --accent:#00ff88; --accent2:#00f0ff; }
+body.color-red { --accent:#ff334d; --accent2:#ff8c00; }
+
+body.font-7seg .score,
+body.font-7seg .timer,
+body.font-7seg .statValue {
+  font-family:SevenSegLocal, "Courier New", monospace;
+}
+
+body.font-basic .score,
+body.font-basic .timer,
+body.font-basic .statValue {
+  font-family:Verdana, Arial, sans-serif;
+  letter-spacing:-2px;
+}
+
+body.font-basic2 .score,
+body.font-basic2 .timer,
+body.font-basic2 .statValue {
+  font-family:Calibri, Arial, sans-serif;
+  letter-spacing:-2px;
+}
+
+body.font-square .score,
+body.font-square .timer,
+body.font-square .statValue {
+  font-family:Impact, "Arial Black", fantasy;
+  letter-spacing:0;
+}
+
+body.font-serif .score,
+body.font-serif .timer,
+body.font-serif .statValue {
+  font-family:Georgia, "Times New Roman", serif;
+  letter-spacing:-3px;
+}
+
+body.box-glass .scorePanel,
+body.box-glass .titleInput,
+body.box-glass .nameInput {
+  backdrop-filter:blur(10px);
+}
+
+body.box-chrome .scorePanel,
+body.box-chrome .titleInput,
+body.box-chrome .nameInput {
+  background:linear-gradient(180deg, rgba(255,255,255,.18), rgba(5,8,22,.68), rgba(255,255,255,.08));
+  border-color:rgba(255,255,255,.36);
+}
+
+body.box-void .scorePanel,
+body.box-void .titleInput,
+body.box-void .nameInput {
+  background:rgba(0,0,0,.58);
+  border-color:rgba(0,240,255,.38);
+}
+
+@media (max-height:720px) {
+  .score { font-size:clamp(78px, 28vw, 140px); }
+  .timer { font-size:34px; min-height:48px; }
+  .avg .statValue { font-size:44px; min-height:50px; }
+  .statValue { font-size:36px; }
+  .controlBtn { min-height:56px; }
+}
+</style>
+</head>
+<body class="color-cyan font-7seg box-glass">
+<div class="app">
+  <div class="topbar">
+    <button id="settingsBtn" class="settingsBtn">⚙ Settings</button>
+    <input id="titleText" class="titleInput" value="Framboys Live" aria-label="Title text">
+    <button id="resetBtn" class="smallBtn">Reset</button>
+  </div>
+
+  <section class="scorePanel">
+    <div id="timer" class="timer">00:00.0</div>
+    <div id="score" class="score">0</div>
+    <div class="labelRows">
+      <div class="statBox avg">
+        <div class="statLabel">AVG</div>
+        <div id="avgScore" class="statValue">0</div>
+      </div>
+      <div class="statBox">
+        <div class="statLabel">MAX</div>
+        <div id="maxScore" class="statValue">0</div>
+      </div>
+    </div>
+  </section>
+
+  <input id="nameText" class="nameInput" placeholder="" aria-label="Contestant name">
+
+  <div class="controls">
+    <button id="minusBtn" class="controlBtn">−</button>
+    <button id="startBtn" class="controlBtn">Start</button>
+    <button id="plusBtn" class="controlBtn plus">+</button>
+  </div>
+</div>
+
+<div id="backdrop" class="backdrop"></div>
+<aside id="drawer" class="drawer">
+  <h2>Settings</h2>
+  <button id="closeBtn" class="closeBtn">Close Settings</button>
+
+  <div class="setting">
+    <label for="scoreMode">Score Mode</label>
+    <select id="scoreMode">
+      <option value="100" selected>1 in 100</option>
+      <option value="10">1 in 10.0</option>
+    </select>
+  </div>
+
+  <div class="setting">
+    <label for="fontMode">Score Font</label>
+    <select id="fontMode">
+      <option value="7seg" selected>7SEG</option>
+      <option value="basic">Basic - Verdana</option>
+      <option value="basic2">Basic 2 - Calibri</option>
+      <option value="square">Square Arcade</option>
+      <option value="serif">Light Serif</option>
+    </select>
+  </div>
+
+  <div class="setting">
+    <label for="colorMode">Main Color</label>
+    <select id="colorMode">
+      <option value="cyan" selected>Cyan</option>
+      <option value="pink">Pink</option>
+      <option value="orange">Orange</option>
+      <option value="blue">Blue</option>
+      <option value="green">Green</option>
+      <option value="red">Red</option>
+      <option value="rainbow">Rainbow</option>
+    </select>
+  </div>
+
+  <div class="setting">
+    <label for="boxMode">Box Style</label>
+    <select id="boxMode">
+      <option value="glass" selected>Creative 1 - Neon Glass</option>
+      <option value="chrome">Creative 2 - Arcade Chrome</option>
+      <option value="void">Creative 3 - Deep Void</option>
+    </select>
+  </div>
+
+  <div class="setting">
+    <label for="stepSize">Tap Increment</label>
+    <input id="stepSize" type="number" min="0.1" max="10" step="0.1" value="1">
+  </div>
+
+  <div class="setting">
+    <label for="glowPower">Glow Power</label>
+    <input id="glowPower" type="range" min="0" max="100" value="72">
+  </div>
+
+  <div class="setting">
+    <label for="scoreSize">Score Size</label>
+    <input id="scoreSize" type="range" min="80" max="190" value="150">
+  </div>
+
+  <div class="setting">
+    <label for="timerSize">Timer Size</label>
+    <input id="timerSize" type="range" min="32" max="58" value="42">
+  </div>
+
+  <div class="setting">
+    <label for="avgSize">AVG Size</label>
+    <input id="avgSize" type="range" min="40" max="70" value="52">
+  </div>
+
+  <div class="setting row">
+    <button id="timerResetBtn" class="smallBtn">Timer Reset</button>
+    <button id="clearStatsBtn" class="smallBtn">Clear Stats</button>
+  </div>
+</aside>
+
+<script>
+const $ = id => document.getElementById(id);
+const body = document.body;
+
+let score = 0;
+let maxScore = 0;
+let scoreTotal = 0;
+let scoreCount = 0;
+let running = false;
+let startTime = 0;
+let elapsedBefore = 0;
+let raf = null;
+
+const settings = {
+  scoreMode: "100",
+  fontMode: "7seg",
+  colorMode: "cyan",
+  boxMode: "glass",
+  stepSize: 1,
+  glowPower: 72,
+  scoreSize: 150,
+  timerSize: 42,
+  avgSize: 52,
+  titleText: "Framboys Live",
+  nameText: ""
+};
+
+function loadSettings() {
+  try {
+    const saved = JSON.parse(localStorage.getItem("scoreboard_mobile_v050") || "{}");
+    Object.assign(settings, saved);
+  } catch(e) {}
+
+  $("scoreMode").value = settings.scoreMode || "100";
+  $("fontMode").value = settings.fontMode || "7seg";
+  $("colorMode").value = settings.colorMode || "cyan";
+  $("boxMode").value = settings.boxMode || "glass";
+  $("stepSize").value = settings.stepSize ?? 1;
+  $("glowPower").value = settings.glowPower ?? 72;
+  $("scoreSize").value = settings.scoreSize ?? 150;
+  $("timerSize").value = settings.timerSize ?? 42;
+  $("avgSize").value = settings.avgSize ?? 52;
+  $("titleText").value = settings.titleText || "Framboys Live";
+  $("nameText").value = settings.nameText || "";
+  applySettings();
+}
+
+function saveSettings() {
+  localStorage.setItem("scoreboard_mobile_v050", JSON.stringify(settings));
+}
+
+function applySettings() {
+  body.className = "";
+  if (settings.colorMode === "rainbow") {
+    body.classList.add("color-cyan");
+    ["score","timer","avgScore","maxScore","titleText","nameText"].forEach(id => $(id).classList.add("rainbowText"));
+    document.querySelectorAll(".scorePanel,.titleInput,.nameInput,.statValue,.timer").forEach(el => el.classList.add("rainbowBox"));
+  } else {
+    body.classList.add("color-" + settings.colorMode);
+    ["score","timer","avgScore","maxScore","titleText","nameText"].forEach(id => $(id).classList.remove("rainbowText"));
+    document.querySelectorAll(".scorePanel,.titleInput,.nameInput,.statValue,.timer").forEach(el => el.classList.remove("rainbowBox"));
+  }
+
+  body.classList.add("font-" + settings.fontMode);
+  body.classList.add("box-" + settings.boxMode);
+
+  const glow = Number(settings.glowPower);
+  document.documentElement.style.setProperty("--glow",
+    `0 0 ${12 + glow/4}px var(--accent), 0 0 ${28 + glow/2}px rgba(0,240,255,.72), 0 0 ${52 + glow}px rgba(255,43,214,.40)`
+  );
+
+  $("score").style.fontSize = `min(${settings.scoreSize}px, 34vw)`;
+  $("timer").style.fontSize = `${settings.timerSize}px`;
+  $("avgScore").style.fontSize = `${settings.avgSize}px`;
+
+  saveSettings();
+}
+
+function formatScore(v) {
+  if (settings.scoreMode === "10") return Number(v).toFixed(1);
+  return String(Math.round(v));
+}
+
+function render() {
+  $("score").textContent = formatScore(score);
+  $("maxScore").textContent = formatScore(maxScore);
+  const avg = scoreCount ? scoreTotal / scoreCount : 0;
+  $("avgScore").textContent = formatScore(avg);
+}
+
+function addScore(delta) {
+  let step = Number(settings.stepSize) || 1;
+  if (settings.scoreMode === "10") {
+    // Correct 1 in 10.0 mode: default tap is 0.1 unless user manually chose another decimal step.
+    step = Number(settings.stepSize);
+    if (!step || step === 1) step = 0.1;
+  }
+  score += delta * step;
+  if (settings.scoreMode === "100") score = Math.round(score);
+  score = Math.max(0, score);
+
+  maxScore = Math.max(maxScore, score);
+  scoreTotal += score;
+  scoreCount++;
+  render();
+}
+
+function resetAll() {
+  score = 0;
+  maxScore = 0;
+  scoreTotal = 0;
+  scoreCount = 0;
+  timerReset();
+  render();
+}
+
+function clearStats() {
+  maxScore = score;
+  scoreTotal = 0;
+  scoreCount = 0;
+  render();
+}
+
+function updateTimer() {
+  const elapsed = running ? elapsedBefore + (performance.now() - startTime) : elapsedBefore;
+  const totalTenths = Math.floor(elapsed / 100);
+  const tenths = totalTenths % 10;
+  const totalSeconds = Math.floor(totalTenths / 10);
+  const seconds = totalSeconds % 60;
+  const minutes = Math.floor(totalSeconds / 60) % 60;
+  const hours = Math.floor(totalSeconds / 3600);
+
+  let text = "";
+  if (hours > 0) {
+    text = `${String(hours).padStart(2,"0")}:${String(minutes).padStart(2,"0")}:${String(seconds).padStart(2,"0")}.${tenths}`;
+  } else {
+    text = `${String(minutes).padStart(2,"0")}:${String(seconds).padStart(2,"0")}.${tenths}`;
+  }
+  $("timer").textContent = text;
+  if (running) raf = requestAnimationFrame(updateTimer);
+}
+
+function timerToggle() {
+  running = !running;
+  if (running) {
+    startTime = performance.now();
+    $("startBtn").textContent = "Pause";
+    updateTimer();
+  } else {
+    elapsedBefore += performance.now() - startTime;
+    $("startBtn").textContent = "Start";
+    cancelAnimationFrame(raf);
+    updateTimer();
+  }
+}
+
+function timerReset() {
+  running = false;
+  startTime = 0;
+  elapsedBefore = 0;
+  $("startBtn").textContent = "Start";
+  cancelAnimationFrame(raf);
+  updateTimer();
+}
+
+function openDrawer() {
+  $("drawer").classList.add("open");
+  $("backdrop").classList.add("show");
+}
+
+function closeDrawer() {
+  $("drawer").classList.remove("open");
+  $("backdrop").classList.remove("show");
+}
+
+$("settingsBtn").addEventListener("click", openDrawer);
+$("closeBtn").addEventListener("click", closeDrawer);
+$("backdrop").addEventListener("click", closeDrawer);
+$("plusBtn").addEventListener("click", () => addScore(1));
+$("minusBtn").addEventListener("click", () => addScore(-1));
+$("startBtn").addEventListener("click", timerToggle);
+$("resetBtn").addEventListener("click", resetAll);
+$("timerResetBtn").addEventListener("click", timerReset);
+$("clearStatsBtn").addEventListener("click", clearStats);
+
+["scoreMode","fontMode","colorMode","boxMode","stepSize","glowPower","scoreSize","timerSize","avgSize"].forEach(id => {
+  $(id).addEventListener("input", e => {
+    settings[id] = e.target.type === "range" || e.target.type === "number" ? Number(e.target.value) : e.target.value;
+    if (id === "scoreMode") {
+      score = 0;
+      maxScore = 0;
+      scoreTotal = 0;
+      scoreCount = 0;
+    }
+    applySettings();
+    render();
+  });
+});
+
+["titleText","nameText"].forEach(id => {
+  $(id).addEventListener("input", e => {
+    settings[id] = e.target.value;
+    saveSettings();
+  });
+});
+
+// Prevent iOS double-tap zoom.
+let lastTouch = 0;
+document.addEventListener("touchend", function(e) {
+  const now = Date.now();
+  if (now - lastTouch <= 300) e.preventDefault();
+  lastTouch = now;
+}, {passive:false});
+
+loadSettings();
+render();
+updateTimer();
+</script>
+</body>
+</html>
