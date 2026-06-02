@@ -1,665 +1,456 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Scoreboard">
-<meta name="theme-color" content="#050615">
-<title>Scoreboard V0.5.1 Mobile iOS</title>
-<link rel="apple-touch-icon" href="scoreboard_app_icon_v0.5.0.png">
-<link rel="icon" type="image/png" href="scoreboard_app_icon_v0.5.0.png">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Talent Show Scoreboard</title>
+
 <style>
-:root {
-  --bg1:#050615;
-  --bg2:#151738;
-  --accent:#00f0ff;
-  --accent2:#ff2bd6;
-  --text:#ffffff;
-  --box:rgba(7, 12, 31, .78);
-  --line:rgba(255,255,255,.20);
-  --glow:0 0 22px var(--accent), 0 0 48px rgba(0,240,255,.72), 0 0 86px rgba(255,43,214,.42);
-  --safeTop: env(safe-area-inset-top);
-  --safeBottom: env(safe-area-inset-bottom);
+@font-face {
+  font-family: "SevenSeg";
+  src: url("7seg.woff2") format("woff2");
 }
 
 * {
-  box-sizing:border-box;
-  -webkit-tap-highlight-color: transparent;
-  user-select:none;
-}
-
-html, body {
-  margin:0;
-  min-height:100%;
-  background:#050615;
-  color:white;
-  font-family:Verdana, Arial, sans-serif;
-  overflow:hidden;
+  box-sizing: border-box;
 }
 
 body {
-  position:fixed;
-  inset:0;
-  background:
-    radial-gradient(circle at 50% 8%, rgba(0,240,255,.22), transparent 34%),
-    radial-gradient(circle at 50% 92%, rgba(255,43,214,.22), transparent 40%),
-    linear-gradient(180deg, var(--bg1), var(--bg2));
+  margin: 0;
+  background: #050505;
+  color: white;
+  font-family: Verdana, sans-serif;
+  overflow-x: hidden;
 }
 
-body::before {
-  content:"";
-  position:absolute;
-  inset:0;
-  background:linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px);
-  background-size:100% 7px;
-  opacity:.22;
-  pointer-events:none;
+.wrapper {
+  min-height: 100vh;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-@font-face {
-  font-family: SevenSegLocal;
-  src: local("7SEG"), local("7SEG Regular"), local("DSEG7 Classic"), local("Digital-7");
+.top-title {
+  width: 90%;
+  max-width: 900px;
+  height: 70px;
+  font-size: 34px;
+  text-align: center;
+  background: #111;
+  color: white;
+  border: 3px solid white;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  font-family: Verdana, sans-serif;
 }
 
-.app {
-  position:absolute;
-  inset:0;
-  padding:calc(12px + var(--safeTop)) 12px calc(12px + var(--safeBottom));
-  display:flex;
-  flex-direction:column;
-  gap:10px;
+.score-box {
+  width: 90%;
+  max-width: 900px;
+  height: 260px;
+  background: #100000;
+  border: 5px solid red;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 35px red;
+  margin-bottom: 20px;
 }
 
-.topbar {
-  display:grid;
-  grid-template-columns:108px 1fr;
-  gap:8px;
-  align-items:center;
+.main-score {
+  font-family: "SevenSeg", monospace;
+  font-size: clamp(80px, 18vw, 210px);
+  color: red;
+  text-shadow: 0 0 12px red, 0 0 30px red;
+  letter-spacing: 4px;
 }
 
-button, select, input {
-  font:inherit;
+.timer-box {
+  width: 90%;
+  max-width: 600px;
+  height: 90px;
+  background: #111;
+  border: 3px solid white;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 25px;
 }
 
-.settingsBtn, .smallBtn {
-  min-height:52px;
-  border:1px solid rgba(255,255,255,.26);
-  border-radius:17px;
-  background:linear-gradient(180deg, rgba(255,255,255,.17), rgba(255,255,255,.055));
-  color:white;
-  box-shadow:0 0 16px rgba(0,240,255,.25), inset 0 0 16px rgba(255,255,255,.05);
-  font-weight:900;
-  letter-spacing:.4px;
+.timer-digits {
+  font-family: "SevenSeg", monospace;
+  font-size: 58px;
+  color: lime;
+  text-shadow: 0 0 12px lime;
 }
 
-.settingsBtn {
-  font-size:16px;
+.stats-row {
+  width: 90%;
+  max-width: 900px;
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-bottom: 25px;
 }
 
-.titleInput, .nameInput {
-  width:100%;
-  border:1px solid rgba(255,255,255,.22);
-  border-radius:18px;
-  background:var(--box);
-  color:var(--text);
-  min-height:54px;
-  text-align:center;
-  padding:8px 10px;
-  box-shadow:var(--glow);
-  font-size:20px;
-  font-weight:800;
+.stat-label-box {
+  width: 120px;
+  height: 70px;
+  background: #111;
+  border: 3px solid white;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.nameInput {
-  min-height:48px;
-  font-size:16px;
-  box-shadow:0 0 16px rgba(0,240,255,.38);
+.stat-label {
+  font-family: Verdana, sans-serif;
+  font-size: 26px;
+  color: white;
 }
 
-.scorePanel {
-  flex:1;
-  min-height:0;
-  border:1px solid rgba(255,255,255,.22);
-  border-radius:28px;
-  background:linear-gradient(180deg, rgba(5,8,22,.78), rgba(5,8,22,.48));
-  box-shadow:0 0 30px rgba(0,240,255,.22), inset 0 0 28px rgba(255,255,255,.04);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  padding:12px;
-  gap:10px;
+.stat-number-box {
+  flex: 1;
+  height: 70px;
+  background: #100000;
+  border: 3px solid red;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 18px red;
 }
 
-.timer {
-  width:min(82vw, 430px);
-  min-height:60px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  border:1px solid rgba(255,255,255,.18);
-  border-radius:17px;
-  background:rgba(0,0,0,.32);
-  font-family:SevenSegLocal, "Courier New", monospace;
-  font-size:46px;
-  line-height:1;
-  color:#fff;
-  text-shadow:var(--glow);
-  letter-spacing:1px;
-  padding:9px 4px 5px;
+.stat-number {
+  font-family: "SevenSeg", monospace;
+  font-size: 46px;
+  color: red;
+  text-shadow: 0 0 10px red;
 }
 
-.score {
-  width:100%;
-  text-align:center;
-  font-family:SevenSegLocal, "Courier New", monospace;
-  font-size:clamp(102px, 34vw, 184px);
-  line-height:.92;
-  color:white;
-  text-shadow:var(--glow);
-  letter-spacing:-4px;
-  padding-top:8px;
-  font-variant-numeric:tabular-nums;
-}
-
-.labelRows {
-  width:100%;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:8px;
-  margin-top:4px;
-}
-
-.statBox {
-  width:min(86vw, 430px);
-  display:grid;
-  grid-template-columns:76px 1fr;
-  align-items:center;
-  gap:8px;
-}
-
-.statLabel {
-  height:42px;
-  border-radius:13px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:rgba(255,255,255,.12);
-  border:1px solid rgba(255,255,255,.16);
-  font-size:15px;
-  font-weight:900;
-  color:white;
-}
-
-.statValue {
-  min-height:50px;
-  border-radius:14px;
-  background:rgba(0,0,0,.35);
-  border:1px solid rgba(255,255,255,.18);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-family:SevenSegLocal, "Courier New", monospace;
-  font-size:42px;
-  color:white;
-  text-shadow:var(--glow);
-  padding-top:4px;
-}
-
-.avg .statValue {
-  font-size:56px;
-  min-height:60px;
+.name-box {
+  width: 90%;
+  max-width: 700px;
+  height: 60px;
+  font-size: 28px;
+  text-align: center;
+  background: #111;
+  color: white;
+  border: 3px solid white;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  font-family: Verdana, sans-serif;
 }
 
 .controls {
-  display:grid;
-  grid-template-columns:1fr 1fr 1fr;
-  gap:8px;
+  width: 90%;
+  max-width: 900px;
+  background: #111;
+  border: 2px solid #444;
+  border-radius: 14px;
+  padding: 18px;
+  display: grid;
+  gap: 12px;
 }
 
-.controlBtn {
-  min-height:62px;
-  border-radius:20px;
-  border:1px solid rgba(255,255,255,.24);
-  color:white;
-  font-weight:950;
-  font-size:17px;
-  background:linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.055));
-  box-shadow:0 0 16px rgba(0,240,255,.22), inset 0 0 14px rgba(255,255,255,.04);
+button, select, input {
+  font-size: 18px;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  font-family: Verdana, sans-serif;
 }
 
-.controlBtn:active {
-  transform:scale(.975);
-  filter:brightness(1.2);
+button {
+  background: #222;
+  color: white;
+  border: 2px solid white;
 }
 
-.drawer {
-  position:absolute;
-  top:0;
-  left:0;
-  bottom:0;
-  width:min(88vw, 390px);
-  background:rgba(5,7,20,.96);
-  border-right:1px solid rgba(255,255,255,.22);
-  box-shadow:22px 0 42px rgba(0,0,0,.45), 0 0 26px rgba(0,240,255,.24);
-  transform:translateX(-105%);
-  transition:transform .25s ease;
-  z-index:5;
-  padding:calc(18px + var(--safeTop)) 14px calc(18px + var(--safeBottom));
-  overflow-y:auto;
-  -webkit-overflow-scrolling:touch;
+button:active {
+  transform: scale(0.97);
 }
 
-.drawer.open {
-  transform:translateX(0);
+.control-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
 }
 
-.drawer h2 {
-  margin:0 0 12px;
-  font-size:24px;
+.color-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px;
 }
 
-.setting {
-  border:1px solid rgba(255,255,255,.14);
-  background:rgba(255,255,255,.055);
-  border-radius:16px;
-  padding:12px;
-  margin:10px 0;
+label {
+  font-size: 15px;
+  color: #ddd;
 }
 
-.setting label {
-  display:block;
-  font-size:13px;
-  opacity:.88;
-  margin-bottom:7px;
-  font-weight:800;
-}
+@media (max-width: 600px) {
+  .stats-row {
+    flex-direction: column;
+  }
 
-.setting select, .setting input[type="number"], .setting input[type="text"] {
-  width:100%;
-  min-height:42px;
-  border-radius:12px;
-  border:1px solid rgba(255,255,255,.20);
-  background:#11152e;
-  color:white;
-  padding:0 10px;
-}
+  .stat-label-box {
+    width: 100%;
+  }
 
-.row {
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
-}
-
-.closeBtn {
-  width:100%;
-  min-height:50px;
-  border-radius:16px;
-  border:1px solid rgba(255,255,255,.25);
-  background:linear-gradient(180deg, rgba(255,43,214,.32), rgba(0,240,255,.16));
-  color:white;
-  font-size:18px;
-  font-weight:900;
-}
-
-.backdrop {
-  position:absolute;
-  inset:0;
-  background:rgba(0,0,0,.48);
-  opacity:0;
-  pointer-events:none;
-  transition:opacity .2s ease;
-  z-index:4;
-}
-
-.backdrop.show {
-  opacity:1;
-  pointer-events:auto;
-}
-
-body.font-7seg .score,
-body.font-7seg .timer,
-body.font-7seg .statValue {
-  font-family:SevenSegLocal, "Courier New", monospace;
-}
-
-body.font-basic .score,
-body.font-basic .timer,
-body.font-basic .statValue {
-  font-family:Verdana, Arial, sans-serif;
-  letter-spacing:-2px;
-}
-
-body.font-basic2 .score,
-body.font-basic2 .timer,
-body.font-basic2 .statValue {
-  font-family:Calibri, Arial, sans-serif;
-  letter-spacing:-2px;
-}
-
-body.font-square .score,
-body.font-square .timer,
-body.font-square .statValue {
-  font-family:Impact, "Arial Black", fantasy;
-  letter-spacing:0;
-}
-
-body.font-serif .score,
-body.font-serif .timer,
-body.font-serif .statValue {
-  font-family:Georgia, "Times New Roman", serif;
-  letter-spacing:-3px;
-}
-
-@media (max-height:720px) {
-  .score { font-size:clamp(84px, 30vw, 144px); }
-  .timer { font-size:38px; min-height:52px; }
-  .avg .statValue { font-size:48px; min-height:54px; }
-  .statValue { font-size:36px; }
-  .controlBtn { min-height:56px; }
+  .top-title {
+    font-size: 24px;
+  }
 }
 </style>
 </head>
-<body class="font-7seg">
-<div class="app">
-  <div class="topbar">
-    <button id="settingsBtn" class="settingsBtn">⚙ Settings</button>
-    <input id="titleText" class="titleInput" value="Framboys Live" aria-label="Title text">
+
+<body>
+<div class="wrapper">
+
+  <input class="top-title" id="titleInput" placeholder="Framboys Live" />
+
+  <div class="score-box">
+    <div class="main-score" id="scoreDisplay">0</div>
   </div>
 
-  <section class="scorePanel">
-    <div id="timer" class="timer">00:00</div>
-    <div id="score" class="score">0</div>
-    <div class="labelRows">
-      <div class="statBox avg">
-        <div class="statLabel">AVG</div>
-        <div id="avgScore" class="statValue">0</div>
-      </div>
-      <div class="statBox">
-        <div class="statLabel">MAX</div>
-        <div id="maxScore" class="statValue">0</div>
-      </div>
-    </div>
-  </section>
+  <div class="timer-box">
+    <div class="timer-digits" id="timerDisplay">00:00.0</div>
+  </div>
 
-  <input id="nameText" class="nameInput" placeholder="" aria-label="Contestant name">
+  <div class="stats-row">
+    <div class="stat-label-box">
+      <div class="stat-label">AVG</div>
+    </div>
+    <div class="stat-number-box">
+      <div class="stat-number" id="avgDisplay">0</div>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-label-box">
+      <div class="stat-label">MAX</div>
+    </div>
+    <div class="stat-number-box">
+      <div class="stat-number" id="maxDisplay">0</div>
+    </div>
+  </div>
+
+  <input class="name-box" id="nameInput" placeholder="" />
 
   <div class="controls">
-    <button id="timerBtn" class="controlBtn">Start</button>
-    <button id="countdownBtn" class="controlBtn">Countdown</button>
-    <button id="resetBtn" class="controlBtn">Reset</button>
+
+    <div class="control-grid">
+      <button onclick="addScore(1)">+1</button>
+      <button onclick="addScore(10)">+10</button>
+      <button onclick="addScore(100)">+100</button>
+      <button onclick="addScore(1000)">+1,000</button>
+      <button onclick="addScore(10000)">+10K</button>
+      <button onclick="addScore(100000)">+100K</button>
+      <button onclick="addScore(1000000)">+1M</button>
+      <button onclick="addScore(100000000)">+100M</button>
+    </div>
+
+    <div class="control-grid">
+      <button onclick="resetScore()">Reset Score</button>
+      <button onclick="startTimer()">Start Timer</button>
+      <button onclick="pauseTimer()">Pause Timer</button>
+      <button onclick="resetTimer()">Reset Timer</button>
+    </div>
+
+    <label>Custom Score Cap</label>
+    <input type="number" id="customCap" placeholder="Example: 1000000" />
+
+    <button onclick="applyCustomCap()">Apply Custom Score Cap</button>
+
+    <div class="color-row">
+      <label>
+        Digit Color
+        <input type="color" id="digitColor" value="#ff0000" onchange="applyColors()" />
+      </label>
+
+      <label>
+        Box Color
+        <input type="color" id="boxColor" value="#100000" onchange="applyColors()" />
+      </label>
+
+      <label>
+        Border Color
+        <input type="color" id="borderColor" value="#ff0000" onchange="applyColors()" />
+      </label>
+
+      <label>
+        Text Box Color
+        <input type="color" id="textBoxColor" value="#111111" onchange="applyColors()" />
+      </label>
+    </div>
+
   </div>
 </div>
 
-<div id="backdrop" class="backdrop"></div>
-<aside id="drawer" class="drawer">
-  <h2>Settings</h2>
-  <button id="closeBtn" class="closeBtn">Close Settings</button>
-
-  <div class="setting">
-    <label for="scoreMode">Score Mode</label>
-    <select id="scoreMode">
-      <option value="100" selected>1 in 100</option>
-      <option value="10">1 in 10.0</option>
-    </select>
-  </div>
-
-  <div class="setting">
-    <label for="manualScore">Manual Score</label>
-    <input id="manualScore" type="number" min="0" max="100" step="1" value="0">
-  </div>
-
-  <div class="setting">
-    <label for="countdownSeconds">Countdown Seconds</label>
-    <input id="countdownSeconds" type="number" min="1" max="9999" step="1" value="60">
-  </div>
-
-  <div class="setting">
-    <label for="fontMode">Score Font</label>
-    <select id="fontMode">
-      <option value="7seg" selected>7SEG</option>
-      <option value="basic">Basic - Verdana</option>
-      <option value="basic2">Basic 2 - Calibri</option>
-      <option value="square">Square Arcade</option>
-      <option value="serif">Light Serif</option>
-    </select>
-  </div>
-
-  <div class="setting row">
-    <button id="timerResetBtn" class="smallBtn">Timer Reset</button>
-    <button id="clearStatsBtn" class="smallBtn">Clear Stats</button>
-  </div>
-</aside>
-
 <script>
-const $ = id => document.getElementById(id);
-const body = document.body;
-
 let score = 0;
 let maxScore = 0;
-let scoreTotal = 0;
-let scoreCount = 0;
+let scoreHistory = [];
+let scoreCap = 1000000000000000;
 
-let timerMode = "up";
-let running = false;
-let startTime = 0;
-let elapsedBefore = 0;
-let countdownTotalMs = 60000;
-let raf = null;
+let timerRunning = false;
+let timerStart = 0;
+let timerElapsed = 0;
+let timerInterval = null;
 
-const settings = {
-  scoreMode: "100",
-  fontMode: "7seg",
-  manualScore: 0,
-  countdownSeconds: 60,
-  titleText: "Framboys Live",
-  nameText: ""
-};
-
-function loadSettings() {
-  try {
-    const saved = JSON.parse(localStorage.getItem("scoreboard_mobile_v051") || "{}");
-    Object.assign(settings, saved);
-  } catch(e) {}
-
-  $("scoreMode").value = settings.scoreMode || "100";
-  $("fontMode").value = settings.fontMode || "7seg";
-  $("manualScore").value = settings.manualScore ?? 0;
-  $("countdownSeconds").value = settings.countdownSeconds ?? 60;
-  $("titleText").value = settings.titleText || "Framboys Live";
-  $("nameText").value = settings.nameText || "";
-  countdownTotalMs = Math.max(1, Number(settings.countdownSeconds) || 60) * 1000;
-  applySettings();
+function toSevenSegText(value) {
+  return String(value)
+    .replaceAll("6", "b")
+    .replaceAll("9", "q");
 }
 
-function saveSettings() {
-  localStorage.setItem("scoreboard_mobile_v051", JSON.stringify(settings));
-}
+function formatScore(num) {
+  if (num < 1000) return String(num);
+  if (num < 10000) return num.toLocaleString();
 
-function applySettings() {
-  body.className = "";
-  body.classList.add("font-" + settings.fontMode);
-  saveSettings();
-}
+  const units = [
+    { value: 1e15, suffix: "Q" },
+    { value: 1e12, suffix: "T" },
+    { value: 1e9, suffix: "B" },
+    { value: 1e6, suffix: "M" },
+    { value: 1e3, suffix: "K" }
+  ];
 
-function formatScore(v) {
-  if (settings.scoreMode === "10") return Number(v).toFixed(1);
-  return String(Math.round(v));
-}
-
-function clampScore(v) {
-  if (settings.scoreMode === "10") return Math.max(0, Math.min(10, Number(v) || 0));
-  return Math.max(0, Math.min(100, Math.round(Number(v) || 0)));
-}
-
-function setScore(v, record=true) {
-  score = clampScore(v);
-  maxScore = Math.max(maxScore, score);
-  if (record) {
-    scoreTotal += score;
-    scoreCount++;
+  for (const unit of units) {
+    if (num >= unit.value) {
+      let short = num / unit.value;
+      return short.toFixed(short >= 100 ? 0 : short >= 10 ? 1 : 2).replace(/\.0+$/, "") + unit.suffix;
+    }
   }
-  render();
+
+  return String(num);
 }
 
-function render() {
-  $("score").textContent = formatScore(score);
-  $("maxScore").textContent = formatScore(maxScore);
-  const avg = scoreCount ? scoreTotal / scoreCount : 0;
-  $("avgScore").textContent = formatScore(avg);
-  $("manualScore").value = settings.scoreMode === "10" ? Number(score).toFixed(1) : Math.round(score);
+function updateDisplay() {
+  const scoreText = toSevenSegText(formatScore(score));
+  const maxText = toSevenSegText(formatScore(maxScore));
+
+  let avg = 0;
+  if (scoreHistory.length > 0) {
+    avg = Math.round(scoreHistory.reduce((a, b) => a + b, 0) / scoreHistory.length);
+  }
+
+  const avgText = toSevenSegText(formatScore(avg));
+
+  document.getElementById("scoreDisplay").textContent = scoreText;
+  document.getElementById("maxDisplay").textContent = maxText;
+  document.getElementById("avgDisplay").textContent = avgText;
 }
 
-function resetAll() {
+function addScore(amount) {
+  score += amount;
+
+  if (score > scoreCap) {
+    score = scoreCap;
+  }
+
+  scoreHistory.push(score);
+
+  if (score > maxScore) {
+    maxScore = score;
+  }
+
+  updateDisplay();
+}
+
+function resetScore() {
   score = 0;
   maxScore = 0;
-  scoreTotal = 0;
-  scoreCount = 0;
-  timerReset();
-  render();
+  scoreHistory = [];
+  updateDisplay();
 }
 
-function clearStats() {
-  maxScore = score;
-  scoreTotal = 0;
-  scoreCount = 0;
-  render();
-}
+function applyCustomCap() {
+  const input = Number(document.getElementById("customCap").value);
 
-function getTimerElapsed() {
-  return running ? elapsedBefore + (performance.now() - startTime) : elapsedBefore;
-}
-
-function formatSeconds(ms) {
-  const totalSeconds = Math.max(0, Math.ceil(ms / 1000));
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-
-  if (hours > 0) {
-    return `${String(hours).padStart(2,"0")}:${String(minutes).padStart(2,"0")}:${String(seconds).padStart(2,"0")}`;
+  if (input > 0) {
+    scoreCap = input;
+    if (score > scoreCap) score = scoreCap;
+    updateDisplay();
   }
-  return `${String(minutes).padStart(2,"0")}:${String(seconds).padStart(2,"0")}`;
+}
+
+function startTimer() {
+  if (timerRunning) return;
+
+  timerRunning = true;
+  timerStart = Date.now() - timerElapsed;
+
+  timerInterval = setInterval(updateTimer, 50);
+}
+
+function pauseTimer() {
+  timerRunning = false;
+  clearInterval(timerInterval);
+}
+
+function resetTimer() {
+  timerRunning = false;
+  clearInterval(timerInterval);
+  timerElapsed = 0;
+  document.getElementById("timerDisplay").textContent = "00:00.0";
 }
 
 function updateTimer() {
-  const elapsed = getTimerElapsed();
-  if (timerMode === "down") {
-    const remaining = countdownTotalMs - elapsed;
-    $("timer").textContent = formatSeconds(remaining);
-    if (remaining <= 0 && running) {
-      running = false;
-      elapsedBefore = countdownTotalMs;
-      $("timerBtn").textContent = "Start";
-      cancelAnimationFrame(raf);
-      return;
-    }
+  timerElapsed = Date.now() - timerStart;
+
+  const totalTenths = Math.floor(timerElapsed / 100);
+  const tenths = totalTenths % 10;
+  const totalSeconds = Math.floor(totalTenths / 10);
+  const seconds = totalSeconds % 60;
+  const minutes = Math.floor(totalSeconds / 60) % 60;
+  const hours = Math.floor(totalSeconds / 3600);
+  const days = Math.floor(hours / 24);
+
+  let display;
+
+  if (days > 0) {
+    display = `${days}d ${String(hours % 24).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}.${tenths}`;
+  } else if (hours > 0) {
+    display = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}.${tenths}`;
   } else {
-    $("timer").textContent = formatSeconds(elapsed);
+    display = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}.${tenths}`;
   }
-  if (running) raf = requestAnimationFrame(updateTimer);
+
+  document.getElementById("timerDisplay").textContent = toSevenSegText(display);
 }
 
-function timerToggle() {
-  running = !running;
-  if (running) {
-    startTime = performance.now();
-    $("timerBtn").textContent = "Pause";
-    updateTimer();
-  } else {
-    elapsedBefore += performance.now() - startTime;
-    $("timerBtn").textContent = "Start";
-    cancelAnimationFrame(raf);
-    updateTimer();
-  }
-}
+function applyColors() {
+  const digitColor = document.getElementById("digitColor").value;
+  const boxColor = document.getElementById("boxColor").value;
+  const borderColor = document.getElementById("borderColor").value;
+  const textBoxColor = document.getElementById("textBoxColor").value;
 
-function timerReset() {
-  running = false;
-  startTime = 0;
-  elapsedBefore = 0;
-  $("timerBtn").textContent = "Start";
-  cancelAnimationFrame(raf);
-  updateTimer();
-}
+  const scoreBoxes = document.querySelectorAll(".score-box, .stat-number-box");
+  const digitElements = document.querySelectorAll(".main-score, .stat-number");
 
-function setTimerMode(mode) {
-  timerMode = mode;
-  timerReset();
-  $("countdownBtn").textContent = timerMode === "down" ? "Count Up" : "Countdown";
-}
-
-function openDrawer() {
-  $("drawer").classList.add("open");
-  $("backdrop").classList.add("show");
-}
-
-function closeDrawer() {
-  $("drawer").classList.remove("open");
-  $("backdrop").classList.remove("show");
-}
-
-$("settingsBtn").addEventListener("click", openDrawer);
-$("closeBtn").addEventListener("click", closeDrawer);
-$("backdrop").addEventListener("click", closeDrawer);
-$("timerBtn").addEventListener("click", timerToggle);
-$("countdownBtn").addEventListener("click", () => setTimerMode(timerMode === "down" ? "up" : "down"));
-$("resetBtn").addEventListener("click", resetAll);
-$("timerResetBtn").addEventListener("click", timerReset);
-$("clearStatsBtn").addEventListener("click", clearStats);
-
-$("scoreMode").addEventListener("input", e => {
-  settings.scoreMode = e.target.value;
-  score = 0;
-  maxScore = 0;
-  scoreTotal = 0;
-  scoreCount = 0;
-  $("manualScore").step = settings.scoreMode === "10" ? "0.1" : "1";
-  $("manualScore").max = settings.scoreMode === "10" ? "10" : "100";
-  applySettings();
-  render();
-});
-
-$("manualScore").addEventListener("input", e => {
-  settings.manualScore = Number(e.target.value) || 0;
-  setScore(settings.manualScore, true);
-  saveSettings();
-});
-
-$("countdownSeconds").addEventListener("input", e => {
-  settings.countdownSeconds = Math.max(1, Number(e.target.value) || 60);
-  countdownTotalMs = settings.countdownSeconds * 1000;
-  saveSettings();
-  if (timerMode === "down") timerReset();
-});
-
-$("fontMode").addEventListener("input", e => {
-  settings.fontMode = e.target.value;
-  applySettings();
-});
-
-["titleText","nameText"].forEach(id => {
-  $(id).addEventListener("input", e => {
-    settings[id] = e.target.value;
-    saveSettings();
+  scoreBoxes.forEach(box => {
+    box.style.background = boxColor;
+    box.style.borderColor = borderColor;
+    box.style.boxShadow = `0 0 25px ${borderColor}`;
   });
-});
 
-let lastTouch = 0;
-document.addEventListener("touchend", function(e) {
-  const now = Date.now();
-  if (now - lastTouch <= 300) e.preventDefault();
-  lastTouch = now;
-}, {passive:false});
+  digitElements.forEach(el => {
+    el.style.color = digitColor;
+    el.style.textShadow = `0 0 12px ${digitColor}, 0 0 30px ${digitColor}`;
+  });
 
-$("manualScore").step = "1";
-$("manualScore").max = "100";
-loadSettings();
-render();
-updateTimer();
+  document.querySelectorAll(".top-title, .name-box, .timer-box, .stat-label-box, .controls").forEach(box => {
+    box.style.background = textBoxColor;
+  });
+}
+
+updateDisplay();
 </script>
+
 </body>
 </html>
